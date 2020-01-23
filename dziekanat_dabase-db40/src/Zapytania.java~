@@ -1,0 +1,247 @@
+import com.db4o.Db4o;
+import com.db4o.ObjectContainer;
+import com.db4o.ObjectSet;
+
+import javax.swing.table.TableRowSorter;
+import java.util.Scanner;
+
+public class Zapytania {
+
+ 
+
+    public static void main(String[] args) {
+        
+
+        System.out.println("Aplikacja uruchomiona!");
+        Scanner in=new Scanner(System.in);
+        ObjectContainer db= Db4o.openFile("sprzedaz_internetowa");
+   
+        try {
+
+            System.out.println("Wypisanie tanskacji klienta o numerze Pesel");
+            
+            System.out.println("podaj pesel");
+            long pesel= Long.parseLong(in.nextLine());
+        
+           Transakcja transakcja=new Transakcja(0,null,0,null,pesel,0);
+
+            ObjectSet result = db.queryByExample(transakcja);
+            while (result.hasNext()) {
+
+                System.out.println(result.next());
+
+            }
+            
+            
+            
+            //////////////////////////////////////////////////
+
+            System.out.println("Wypisanie sredniej wydanej kwoty klienta o numerze Pesel");
+
+
+            System.out.println("podaj pesel");
+            pesel= Long.parseLong(in.nextLine());
+            transakcja=new Transakcja(0,null,0,null,pesel,0);
+            int ilosc=0;
+            double wartosc=0;
+           
+
+            result = db.queryByExample(transakcja);
+            while (result.hasNext()) {
+
+                Transakcja t=(Transakcja) result.next();
+                ilosc++;
+                wartosc+=t.wartosc;
+            }
+            System.out.println(wartosc/ilosc);
+            
+            //////////////////////////////////////////////////////////
+            System.out.println("Wypisanie sumy wydanej przez klienta o numerze Pesel");
+
+
+            System.out.println("podaj pesel");
+            pesel= Long.parseLong(in.nextLine());
+            transakcja=new Transakcja(0,null,0,null,pesel,0);
+            
+           wartosc=0;
+
+
+            result = db.queryByExample(transakcja);
+            while (result.hasNext()) {
+
+                Transakcja t=(Transakcja) result.next();
+                
+                wartosc+=t.wartosc;
+            }
+            System.out.println(wartosc);
+
+
+            //////////////////////////////////////////////////////////
+
+            System.out.println("Wypisanie listy produktow kupionych przez klienta");
+            Transakcja_Detale transakcja_detale; 
+
+            System.out.println("podaj pesel");
+            pesel= Long.parseLong(in.nextLine());
+            transakcja=new Transakcja(0,null,0,null,pesel,0);
+
+            
+
+
+            result = db.queryByExample(transakcja);
+            while (result.hasNext()) {
+
+                Transakcja t=(Transakcja) result.next();
+                int id=t.id_transakcji;
+                transakcja_detale = new Transakcja_Detale(id,0, null, 0, null, 0, 0, null);
+
+                ObjectSet result2 = db.queryByExample(transakcja_detale);
+                while (result2.hasNext()) {
+                    
+                   Transakcja_Detale td=(Transakcja_Detale)result2.next();
+                   if(td.id_transakcji==id)
+                   System.out.println(td);
+                }
+               
+            }
+       
+///////////////////////////////////////////////////////////////////////////////////
+            System.out.println("Wypisanie listy produktow sprzedanych przez pracownika");
+            
+
+            System.out.println("podaj id");
+            
+           
+            int  idp=Integer.parseInt(in.nextLine());
+
+
+           Transakcja tra=new Transakcja(0,null,0,null,0L, idp);
+
+
+            result = db.queryByExample(transakcja);
+            
+            while (result.hasNext()) {
+             
+                Transakcja t=(Transakcja) result.next();
+               
+                int id=t.id_transakcji;
+                transakcja_detale = new Transakcja_Detale(id,0, null, 0, null, 0, 0, null);
+
+                ObjectSet result2 = db.queryByExample(transakcja_detale);
+                while (result2.hasNext()) {
+
+                    Transakcja_Detale td=(Transakcja_Detale)result2.next();
+                    System.out.println(td);
+                }
+
+            }
+//////////////////////////////////////////////////////////////////////////////////////
+            System.out.println("Wypisanie listy klientow obsluzonych przez pracownika");
+            Klient klient = new Klient(null,null);
+            
+            System.out.println("podaj id");
+
+
+            idp=Integer.parseInt(in.nextLine());
+
+
+            transakcja=new Transakcja(0,null,0,null,0L,idp);
+            
+            result = db.queryByExample(transakcja);
+            while (result.hasNext()) {
+
+                Transakcja t=(Transakcja) result.next();
+                long peselk=t.pesel_klienta;
+                 klient.ustawDane(peselk, null,null,null,null,0);
+
+                ObjectSet result2 = db.queryByExample(klient);
+                while (result2.hasNext()) {
+
+                    Klient k=(Klient) result2.next();
+                    System.out.println(k);
+                }
+
+            }
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+            System.out.println("Wypisanie listy transakcji zatwierdzonych przez pracownika");
+
+
+            System.out.println("podaj id");
+
+
+             idp=Integer.parseInt(in.nextLine());
+
+
+            transakcja=new Transakcja(0,null,0,null,0L,idp);
+
+
+            result = db.queryByExample(transakcja);
+            while (result.hasNext()) {
+
+                Transakcja t=(Transakcja) result.next();
+                System.out.println(t);
+
+            }
+//////////////////////////////////////////////////////////////////
+            System.out.println("Wypisanie  kwoty pobranej przez pracownika o id");
+
+
+            System.out.println("podaj id");
+            idp=Integer.parseInt(in.nextLine());
+            transakcja=new Transakcja(0,null,0,null,0L,idp);
+            
+            wartosc=0;
+
+
+            result = db.queryByExample(transakcja);
+            while (result.hasNext()) {
+
+                Transakcja t=(Transakcja) result.next();
+                
+                wartosc+=t.wartosc;
+            }
+            System.out.println(wartosc);
+//////////////////////////////////////////////////////////////////
+            System.out.println("Wypisanie transakcji towaru o id");
+
+
+            System.out.println("podaj id");
+            int idt=Integer.parseInt(in.nextLine());
+            Transakcja_Detale tr=new Transakcja_Detale(0,0,null,0,null,0,0,null);
+           
+            result = db.queryByExample(tr);
+            while (result.hasNext()) {
+                
+                
+                Transakcja_Detale to=(Transakcja_Detale) result.next();
+            
+                {
+                Transakcja tt=new Transakcja(to.id_transakcji,null,0,null,0L,0);
+                ObjectSet  result2 = db.queryByExample(tt);
+                while (result2.hasNext()) {
+                    Transakcja wyn=( Transakcja)result2.next();
+                System.out.println(wyn);
+                
+                }
+                }
+                
+                
+                
+            
+            
+            
+            
+        }
+        }
+        finally {
+            db.close();
+        }
+
+
+
+      
+    }
+    
+}
